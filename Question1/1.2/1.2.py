@@ -11,13 +11,13 @@ import numpy as np
 from Question1 import utils
 
 
+
 '''Para logistic Regression multiclass usmos a softmax 
 a formula é p(y = k|x) = e^wk.T@x/ sumj(e^wj.T@x)'''
 
 class LogisticRegression:
     # Inicialização dos pesos a 0 onde se vai fazer o update
     # array com formato n_classes * n*features = 26 * 784
-
     def __init__(self, n_classes, n_features):
         self.W = np.zeros((n_classes, n_features))
         self.eta = 0.0001
@@ -172,8 +172,8 @@ if __name__ == '__main__':
                         help="""Number of epochs to train for.""")
     parser.add_argument('--data-path', type=str, default="emnist-letters.npz")
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--save-path", type=str, default="perceptron.npz")
-    parser.add_argument("--accuracy-plot", default="Q1-perceptron-accs.pdf")
-    parser.add_argument("--scores", default="Q1-perceptron-scores.json")
+    parser.add_argument("--save-path", type=str, default="logistic.npz")
+    parser.add_argument("--accuracy-plot", default="Q1-logistic-accs.pdf")
+    parser.add_argument("--scores", default="Q1-logistic-scores.json")
     args = parser.parse_args()
     main(args)
