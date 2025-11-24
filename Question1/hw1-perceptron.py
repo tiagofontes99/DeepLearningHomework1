@@ -17,6 +17,16 @@ class Perceptron:
     def __init__(self, n_classes, n_features):
         self.W = np.zeros((n_classes, n_features))
 
+    def evaluate(self, X, y):
+        """
+        X examples whith 768 features
+        returns score in float
+        """
+        y_pred = self.predict(X)
+        y_true = y
+        acc = np.mean(y_pred == y_true)
+        return acc
+
     def save(self, path):
         """
         Save perceptron to the provided path
@@ -42,9 +52,9 @@ class Perceptron:
         #gives more wheight if is the right lable, less if is the wrong one
         #if is right no update
         predict = self.predict(x_i)
-        if predict != y_i-1:
-            self.W[y_i-1] = self.W[y_i-1] + x_i
-            self.W[predict] = self.W[predict] - x_i
+        if predict != y_i:
+            self.W[y_i] += x_i
+            self.W[predict] -= x_i
 
         pass
 
@@ -68,15 +78,15 @@ class Perceptron:
         #np.argmax(scores, axis=1) usamos este se quisermos que seja entre 0 e 1
         # tipo onehot e devolve a matrix com a pos
         scores =X @ self.W.T
-        return np.argmax(scores, axis=1)
+        return np.argmax(scores, axis=-1)
 
 def main(args):
     utils.configure_seed(seed=args.seed)
 
     data = utils.load_dataset(data_path=args.data_path, bias=True)
-    X_train, y_train = data["train"]
-    X_valid, y_valid = data["dev"]
-    X_test, y_test = data["test"]
+    X_train, y_train = data["X_train"],data["y_train"]
+    X_valid, y_valid = data["X_valid"],data["y_valid"]
+    X_test, y_test = data["X_test"],data["y_test"]
     n_classes = np.unique(y_train).size
     n_feats = X_train.shape[1]
 
@@ -108,9 +118,11 @@ def main(args):
 
         print('train acc: {:.4f} | val acc: {:.4f}'.format(train_acc, valid_acc))
 
-        # Todo: Q1(a)
-        # Decide whether to save the model to args.save_path based on its
-        # validation score
+        if valid_acc> best_valid:
+            best_valid = valid_acc
+            best_epoch = i
+            model.save(args.save_path)
+            print(f"New best model at epoch {i} with val acc = {valid_acc:.4f}")
 
     elapsed_time = time.time() - start
     minutes = int(elapsed_time // 60)
@@ -144,7 +156,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--epochs', default=20, type=int,
                         help="""Number of epochs to train for.""")
-    parser.add_argument('--data-path', type=str, default="emnist-letters.pkl")
+    parser.add_argument('--data-path', type=str, default="emnist-letters.npz")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--save-path", type=str, default="perceptron.npz")
     parser.add_argument("--accuracy-plot", default="Q1-perceptron-accs.pdf")
