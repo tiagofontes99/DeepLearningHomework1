@@ -8,23 +8,29 @@ import time
 import pickle
 import json
 import numpy as np
-import utils
+from Question1 import utils
 
 
+'''Para logistic Regression multiclass usmos a softmax 
+a formula é p(y = k|x) = e^wk.T@x/ sumj(e^wj.T@x)'''
 
-class Perceptron:
+class LogisticRegression:
     # Inicialização dos pesos a 0 onde se vai fazer o update
     # array com formato n_classes * n*features = 26 * 784
+
     def __init__(self, n_classes, n_features):
         self.W = np.zeros((n_classes, n_features))
+        self.eta = 0.0001
+        self.l2pen = 0.00001
+
 
     def evaluate(self, X, y):
         """
         X examples whith 768 features
         returns score in float
         """
+        y_true = y-1
         y_pred = self.predict(X)
-        y_true = y
         acc = np.mean(y_pred == y_true)
         return acc
 
@@ -49,14 +55,22 @@ class Perceptron:
         y_i (numero de 1 a 26): the gold label for that example
 
         """
-        #updates wheith based on the fact that it got wrong
-        #gives more wheight if is the right lable, less if is the wrong one
-        #if is right no update
-        predict = self.predict(x_i)
-        if predict != y_i:
-            self.W[y_i] += x_i
-            self.W[predict] -= x_i
+        y_idx = y_i - 1
 
+        scores = self.W @ x_i
+        scores = scores - np.max(scores)
+        exps = np.exp(scores)
+        probs = exps / np.sum(exps)
+
+
+        y_onehot = np.zeros_like(probs)
+        y_onehot[y_idx] = 1.0
+
+
+        grad_W = np.outer(probs - y_onehot, x_i)  # (C, F)
+
+
+        self.W -= self.eta * (grad_W + self.l2pen * self.W)
         pass
 
     def train_epoch(self, X, y):
@@ -74,12 +88,11 @@ class Perceptron:
         X (n_examples, n_features)
         returns predicted labels y_hat, whose shape is (n_examples,)
         """
-        #armgax do y hat
-        #Por cada sample que tem o X multiplicamos pelos W e devolvemos o argmax
-        #np.argmax(scores, axis=1) usamos este se quisermos que seja entre 0 e 1
-        # tipo onehot e devolve a matrix com a pos
-        scores =X @ self.W.T
-        return np.argmax(scores, axis=-1)
+        scores =   X @ self.W.T
+        scores = scores - np.max(scores, axis=-1, keepdims=True)
+        exps = np.exp(scores)
+        probs = exps / np.sum(exps, axis=-1, keepdims=True)
+        return np.argmax(probs, axis=-1)
 
 def main(args):
     utils.configure_seed(seed=args.seed)
@@ -92,7 +105,7 @@ def main(args):
     n_feats = X_train.shape[1]
 
     # initialize the model
-    model = Perceptron(n_classes, n_feats)
+    model = LogisticRegression(n_classes, n_feats)
 
     epochs = np.arange(1, args.epochs + 1)
 
@@ -131,7 +144,7 @@ def main(args):
     print('Training took {} minutes and {} seconds'.format(minutes, seconds))
 
     print("Reloading best checkpoint")
-    best_model = Perceptron.load(args.save_path)
+    best_model = LogisticRegression.load(args.save_path)
     test_acc = best_model.evaluate(X_test, y_test)
 
     print('Best model test acc: {:.4f}'.format(test_acc))

@@ -8,7 +8,7 @@ import time
 import pickle
 import json
 import numpy as np
-import utils
+from Question1 import utils
 
 
 
