@@ -10,7 +10,7 @@ import torch.nn as nn
 from matplotlib import pyplot as plt
 
 import time
-import utils
+from Question1 import utils
 
 
 class FeedforwardNetwork(nn.Module):

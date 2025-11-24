@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 # Deep Learning Homework 1
+#Feito por Tiago Fontes
 
 import argparse
 import time
@@ -84,9 +85,9 @@ def main(args):
     utils.configure_seed(seed=args.seed)
 
     data = utils.load_dataset(data_path=args.data_path, bias=True)
-    X_train, y_train = data["X_train"],data["y_train"]
-    X_valid, y_valid = data["X_valid"],data["y_valid"]
-    X_test, y_test = data["X_test"],data["y_test"]
+    X_train, y_train = data["train"]
+    X_valid, y_valid = data["dev"]
+    X_test, y_test = data["test"]
     n_classes = np.unique(y_train).size
     n_feats = X_train.shape[1]
 
