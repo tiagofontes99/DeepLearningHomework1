@@ -17,7 +17,7 @@ import utils
 
 class FeedforwardNetwork(nn.Module):
     def __init__(
-            self, t, n_features, hidden_size, layers,
+            self, n_classes, n_features, hidden_size, layers,
             activation_type, dropout, **kwargs):
         """ Define a vanilla multiple-layer FFN with `layers` hidden layers 
         Args:
@@ -29,10 +29,10 @@ class FeedforwardNetwork(nn.Module):
             dropout (float): dropout probability
         """
         super().__init__()
-        self.n_classes = t                  # 26 para este dataset
+        self.n_classes = n_classes          # 26 para este dataset
         self.n_features = n_features        # 784
         self.hidden_size = hidden_size
-        self.layers = layers
+        self.layers = layers                # single layer para este exercicio
         self.activation_type = activation_type
         self.dropout = dropout
 
@@ -54,7 +54,7 @@ class FeedforwardNetwork(nn.Module):
                 self.add_module(f'activation{i}', self.activation)
 
             if self.dropout > 0:
-                self.add_module(f'dropout', nn.Dropout(self.dropout))
+                self.add_module(f'dropout{i}', nn.Dropout(self.dropout))
         
         # last layer
         self.add_module(f'linear{self.layers}', nn.Linear(self.hidden_size, self.n_classes))
@@ -84,14 +84,10 @@ def train_batch(X, y, model, optimizer, criterion, **kwargs):
     Returns:
         loss (float)
     """
-    # clear the gradients
-    optimizer.zero_grad()
-    # compute the model output
-    yhat = predict(model, X)
-    # compute the loss
-    loss = criterion(yhat, y)
-    # backpropagation (computes the gradients)
-    loss.backward()
+    optimizer.zero_grad()       # sets the gradients to zero
+    yhat = predict(model, X)    # compute the model output
+    loss = criterion(yhat, y)   # compute the loss
+    loss.backward()             # backpropagation (computes the gradients)
     # update model weights using the gradients
     optimizer.step()
     return loss
@@ -121,11 +117,11 @@ def evaluate(model, X, y, criterion):
         loss, accuracy (Tuple[float, float])
     """
     # compute the model output
-    yhat = predict(model, X)
+    y_hat = predict(model, X)
     # compute the loss
-    loss = criterion(yhat, y) 
+    loss = criterion(y_hat, y) 
     # compute the accuracy
-    accuracy = torch.sum(torch.argmax(yhat, axis=1) == y) / len(y)
+    accuracy = torch.mean((torch.argmax(y_hat, dim=1) == y).float())  # argmax devolve o indice da classe predicted com maior probabilidade
     return loss, accuracy
 
 
@@ -210,11 +206,11 @@ def main():
 
     start = time.time()
 
-    # predict and evaluate without training (inicial evaluation)
-    """
-    model.eval()
+    # evaluate without training (inicial evaluation)
+    model.eval()                                # desativa o dropoup (desliga neuronios aleatorios), batchnorm fixo e desabilita os gradientes ao usar torch.no_grad
     initial_train_loss, initial_train_acc = evaluate(model, train_X, train_y, criterion)
     initial_val_loss, initial_val_acc = evaluate(model, dev_X, dev_y, criterion)
+    """
     train_losses.append(initial_train_loss)
     train_accs.append(initial_train_acc)
     valid_losses.append(initial_val_loss)
@@ -225,7 +221,7 @@ def main():
     for ii in epochs:
         print('Training epoch {}'.format(ii))
         epoch_train_losses = []
-        model.train()
+        model.train()                               # set the model to training mode -> ativa o dropout e batchnorm variável
         for X_batch, y_batch in train_dataloader:
             loss = train_batch(
                 X_batch, y_batch, model, optimizer, criterion)
