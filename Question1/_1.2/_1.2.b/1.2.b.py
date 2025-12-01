@@ -2,6 +2,7 @@
 
 # Deep Learning Homework 1
 #Feito por Tiago Fontes
+#Implementação métoodo HOG  Dalal & Triggs (2005), “Histograms of Oriented Gradients for Human Detection”.
 
 import argparse
 import time
@@ -9,7 +10,8 @@ import pickle
 import json
 import numpy as np
 from Question1 import utils
-
+from Question1 import extractHOGFeatures
+DATA_PATH = r"C:\Users\CeX\Desktop\Deep Learning\DeepLearingHomework1\Question1\emnist-letters.npz"
 
 
 '''Para logistic Regression multiclass usmos a softmax 
@@ -20,9 +22,8 @@ class LogisticRegression:
     # array com formato n_classes * n*features = 26 * 784
     def __init__(self, n_classes, n_features):
         self.W = np.zeros((n_classes, n_features))
-        self.eta = 0.0001
-        self.l2pen = 0.00001
-
+        self.eta = 0.01
+        self.l2pen = 0.0001
 
     def evaluate(self, X, y):
         """
@@ -55,7 +56,7 @@ class LogisticRegression:
         y_i (numero de 1 a 26): the gold label for that example
 
         """
-        y_idx = y_i - 1
+        y_idx = y_i -1
 
         scores = self.W @ x_i
         scores = scores - np.max(scores)
@@ -67,7 +68,7 @@ class LogisticRegression:
         y_onehot[y_idx] = 1.0
 
 
-        grad_W = np.outer(probs - y_onehot, x_i)  # (C, F)
+        grad_W = np.outer(probs - y_onehot, x_i)
 
 
         self.W -= self.eta * (grad_W + self.l2pen * self.W)
@@ -101,6 +102,16 @@ def main(args):
     X_train, y_train = data["train"]
     X_valid, y_valid = data["dev"]
     X_test, y_test = data["test"]
+
+    #Extrair HOG features
+    print("extracted 0")
+    X_train = extractHOGFeatures.extract_hog_features(X_train)
+    print("extracted 1")
+    X_valid = extractHOGFeatures.extract_hog_features(X_valid)
+    print("extracted 2")
+    X_test = extractHOGFeatures.extract_hog_features(X_test)
+    print("extracted 3")
+
     n_classes = np.unique(y_train).size
     n_feats = X_train.shape[1]
 
@@ -170,10 +181,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--epochs', default=20, type=int,
                         help="""Number of epochs to train for.""")
-    parser.add_argument('--data-path', type=str, default="emnist-letters.npz")
+    parser.add_argument('--data-path', type=str, default=DATA_PATH)
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--save-path", type=str, default="logistic.npz")
-    parser.add_argument("--accuracy-plot", default="Q1-logistic-accs.pdf")
-    parser.add_argument("--scores", default="Q1-logistic-scores.json")
+    parser.add_argument("--save-path", type=str, default="logistic_HOG.npz")
+    parser.add_argument("--accuracy-plot", default="Q1-logistic-accs-HOG.pdf")
+    parser.add_argument("--scores", default="Q1-logistic-scores-HOG.json")
     args = parser.parse_args()
     main(args)
