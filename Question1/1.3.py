@@ -19,7 +19,7 @@ class MultiLayerPerceptron:
         self.hidden_dim = hidden_dim
         self.eta = eta
 
-        # Inicialização pedida:
+        # Inicialização
         # W ~ N(µ, σ^2) com µ = 0.1, σ = 0.1
         self.W1 = np.random.normal(loc=0.1, scale=0.1, size=(hidden_dim, n_features))
         self.b1 = np.zeros(hidden_dim)
@@ -62,7 +62,7 @@ class MultiLayerPerceptron:
     def update_weight(self, x_i, y_i):
         """
         x_i: (n_features,)
-        y_i: label em [1..n_classes] (como no enunciado EMNIST)
+        y_i: label em [1..n_classes]
         devolve o loss da amostra (para logging)
         """
         y_idx = y_i - 1  # converter para 0-based
@@ -73,7 +73,7 @@ class MultiLayerPerceptron:
         # Softmax estável numericamente
         z2_shift = z2 - np.max(z2)
         exp_scores = np.exp(z2_shift)
-        probs = exp_scores / np.sum(exp_scores)   # (n_classes,)
+        probs = exp_scores / np.sum(exp_scores)
 
         # Cross-entropy
         loss = -np.log(probs[y_idx] + 1e-12)
@@ -81,18 +81,18 @@ class MultiLayerPerceptron:
         # Backprop
         # grad_z2 = p - y_onehot
         grad_z2 = probs.copy()
-        grad_z2[y_idx] -= 1.0                    # (n_classes,)
+        grad_z2[y_idx] -= 1.0
 
         # Gradientes output layer
-        grad_W2 = np.outer(grad_z2, h)           # (n_classes, hidden_dim)
-        grad_b2 = grad_z2                        # (n_classes,)
+        grad_W2 = np.outer(grad_z2, h)
+        grad_b2 = grad_z2
 
         # Backprop para hidden
-        grad_h  = self.W2.T @ grad_z2           # (hidden_dim,)
-        grad_z1 = grad_h * self.drelu(z1)       # (hidden_dim,)
+        grad_h  = self.W2.T @ grad_z2
+        grad_z1 = grad_h * self.drelu(z1)
 
-        grad_W1 = np.outer(grad_z1, x_i)        # (hidden_dim, n_features)
-        grad_b1 = grad_z1                       # (hidden_dim,)
+        grad_W1 = np.outer(grad_z1, x_i)
+        grad_b1 = grad_z1
 
         # SGD update
         self.W2 -= self.eta * grad_W2
@@ -141,7 +141,7 @@ def main(args):
     n_classes = np.unique(y_train).size
     n_feats = X_train.shape[1]
 
-    # inicializar MLP
+
     model = MultiLayerPerceptron(n_classes, n_feats, hidden_dim=100, eta=0.001)
 
     epochs = np.arange(1, args.epochs + 1)
