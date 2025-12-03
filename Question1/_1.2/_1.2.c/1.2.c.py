@@ -8,11 +8,11 @@ import time
 import pickle
 import json
 import numpy as np
-from Question1 import utils
-from Question1 import extractHOGFeatures
-DATA_PATH = r"C:\Users\CeX\Desktop\Deep Learning\DeepLearingHomework1\Question1\emnist-letters.npz"
+import utils
+import extractHOGFeatures
+import os
 
-
+DATA_PATH = r"C:\Users\CeX\PycharmProjects\DeepLearningHomework1\Question1\emnist-letters.npz"
 
 '''Para logistic Regression multiclass usmos a softmax 
 a formula é p(y = k|x) = e^wk.T@x/ sumj(e^wj.T@x)'''
@@ -21,12 +21,10 @@ a formula é p(y = k|x) = e^wk.T@x/ sumj(e^wj.T@x)'''
 class LogisticRegression:
     # Inicialização dos pesos a 0 onde se vai fazer o update
     # array com formato n_classes * n*features = 26 * 784
-    def __init__(self, n_classes, n_features, eta, l2pen, HOG):
+    def __init__(self, n_classes, n_features, eta, l2pen):
         self.W = np.zeros((n_classes, n_features))
         self.eta = eta
         self.l2pen = l2pen
-        self.hog = HOG
-
 
 
     def evaluate(self, X, y):
@@ -112,76 +110,109 @@ def main(args):
     n_feats = X_train.shape[1]
     eta_value = [0.01, 0.001, 0.0001]
     l2pen = [0.0001, 0.00001]
-    X_train_HOG = extractHOGFeatures(X_train)
-    X_valid_HOG = extractHOGFeatures(X_valid)
-    X_test_HOG = extractHOGFeatures(X_test)
     # initialize the model
-    for eta in eta_value:
-        for l2 in l2pen:
-            model = LogisticRegression(n_classes, n_feats, eta, l2, HOG=False)
 
-            epochs = np.arange(1, args.epochs + 1)
+    best_global = 0.0
+    best_l2 =0.0
+    best_eta = 0.0
+    hog = False
+    for i in range(2):
+        if i == 1:
+            X_train = extractHOGFeatures.extract_hog_features(X_train)
+            X_valid = extractHOGFeatures.extract_hog_features(X_valid)
+            X_test = extractHOGFeatures.extract_hog_features(X_test)
+            hog= True
+        for eta in eta_value:
+            for l2 in l2pen:
+                best_valid = 0.0
+                best_model = False
 
-            valid_accs = []
-            train_accs = []
+                model = LogisticRegression(n_classes, X_train.shape[1], eta, l2)
 
-            start = time.time()
+                epochs = np.arange(1, args.epochs + 1)
 
-            best_valid = 0.0
-            best_epoch = -1
-            for i in epochs:
-                print('Training epoch {}'.format(i))
-                train_order = np.random.permutation(X_train.shape[0])
-                X_train = X_train[train_order]
-                y_train = y_train[train_order]
+                valid_accs = []
+                train_accs = []
 
-                model.train_epoch(X_train, y_train)
+                start = time.time()
 
-                train_acc = model.evaluate(X_train, y_train)
-                valid_acc = model.evaluate(X_valid, y_valid)
 
-                train_accs.append(train_acc)
-                valid_accs.append(valid_acc)
+                best_epoch = -1
+                for i in epochs:
+                    print('Training epoch {}'.format(i))
+                    train_order = np.random.permutation(X_train.shape[0])
+                    X_train = X_train[train_order]
+                    y_train = y_train[train_order]
 
-                print('train acc: {:.4f} | val acc: {:.4f}'.format(train_acc, valid_acc))
+                    model.train_epoch(X_train, y_train)
 
-                if valid_acc > best_valid:
-                    best_valid = valid_acc
-                    best_epoch = i
-                    model.save(args.save_path)
-                    print(f"New best model at epoch {i} with val acc = {valid_acc:.4f}")
+                    train_acc = model.evaluate(X_train, y_train)
+                    valid_acc = model.evaluate(X_valid, y_valid)
 
-            elapsed_time = time.time() - start
-            minutes = int(elapsed_time // 60)
-            seconds = int(elapsed_time % 60)
-            print('Training took {} minutes and {} seconds'.format(minutes, seconds))
+                    train_accs.append(train_acc)
+                    valid_accs.append(valid_acc)
 
-            print("Reloading best checkpoint")
-            best_model = LogisticRegression.load(args.save_path)
-            test_acc = best_model.evaluate(X_test, y_test)
+                    print('train acc: {:.4f} | val acc: {:.4f}'.format(train_acc, valid_acc))
 
-            print('Best model test acc: {:.4f}'.format(test_acc))
+                    if valid_acc > best_valid:
+                        best_valid = valid_acc
+                        best_epoch = i
+                        print(f"New best model at epoch {i} with val acc = {valid_acc:.4f}")
 
-            utils.plot(
-                "Epoch", "Accuracy",
-                {"train": (epochs, train_accs), "valid": (epochs, valid_accs)},
-                filename=args.accuracy_plot
-            )
+                    if best_valid > best_global:
+                        best_global = best_valid
+                        model.save(args.save_path)
+                        best_eta=eta
+                        best_l2 = l2
+                        best_model=True
+                        model.save(args.save_path)
+                        print(f"New best global with param = l2: {l2}, eta {eta}, hog { hog}, val acc = {valid_acc:.4f}")
+                        with open(args.best_score, "w") as f:
+                            json.dump({
+                            "best_global": float(best_global),
+                            "l2": best_l2,
+                            "eta": best_eta,
+                            "HOG features": hog,
+                        }, f, indent=4)
 
-            with open(args.scores, "w") as f:
-                json.dump(
-                    {
-                        "best_valid": float(best_valid),
-                        "selected_epoch": int(best_epoch),
-                        "test": float(test_acc),
-                        "time": elapsed_time,
-                        "l2": l2,
-                        "eta": eta,
-                        "HOG features": False,
-                    },
-                    f,
-                    indent=4
-                )
+                elapsed_time = time.time() - start
+                minutes = int(elapsed_time // 60)
+                seconds = int(elapsed_time % 60)
+                print('Training took {} minutes and {} seconds'.format(minutes, seconds))
+
+                print("Reloading best checkpoint")
+                best_model = LogisticRegression.load(args.save_path)
+                test_acc = best_model.evaluate(X_test, y_test)
+
+                print('Best model test acc: {:.4f}'.format(test_acc))
+                if best_model:
+                    utils.plot(
+                        "Epoch", "Accuracy",
+                        {"train": (epochs, train_accs), "valid": (epochs, valid_accs)},
+                        filename=args.accuracy_plot
+                    )
+                results = {
+                    "best_valid": float(best_valid),
+                    "test": float(test_acc),
+                    "time": elapsed_time,
+                    "l2": l2,
+                    "eta": eta,
+                    "HOG features": hog,
+                }
+
+                if os.path.exists(args.scores):
+                    with open(args.scores, "r") as f:
+                        data = json.load(f)
+
+                    if isinstance(data, dict):
+                        data = [data]
+
+                else:
+                    data = []
+                data.append(results)
+                with open(args.scores, "w") as f:
+                    json.dump(data, f, indent=4)
+
 
 
 if __name__ == '__main__':
@@ -193,5 +224,6 @@ if __name__ == '__main__':
     parser.add_argument("--save-path", type=str, default="logistic-grid_search.npz")
     parser.add_argument("--accuracy-plot", default="Q1-logistic-accs-grid_search.pdf")
     parser.add_argument("--scores", default="Q1-logistic-scores-grid_search.json")
+    parser.add_argument("--best_score", default="Q1-logistic-scores-grid_search_best_param.json")
     args = parser.parse_args()
     main(args)
