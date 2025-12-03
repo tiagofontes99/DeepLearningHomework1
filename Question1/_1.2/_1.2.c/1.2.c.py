@@ -27,6 +27,8 @@ class LogisticRegression:
         self.l2pen = l2pen
         self.hog = HOG
 
+
+
     def evaluate(self, X, y):
         """
         X examples whith 768 features
@@ -100,6 +102,7 @@ class LogisticRegression:
 
 def main(args):
     utils.configure_seed(seed=args.seed)
+    print(args)
 
     data = utils.load_dataset(data_path=args.data_path, bias=True)
     X_train, y_train = data["train"]
@@ -109,6 +112,9 @@ def main(args):
     n_feats = X_train.shape[1]
     eta_value = [0.01, 0.001, 0.0001]
     l2pen = [0.0001, 0.00001]
+    X_train_HOG = extractHOGFeatures(X_train)
+    X_valid_HOG = extractHOGFeatures(X_valid)
+    X_test_HOG = extractHOGFeatures(X_test)
     # initialize the model
     for eta in eta_value:
         for l2 in l2pen:
@@ -164,10 +170,15 @@ def main(args):
 
             with open(args.scores, "w") as f:
                 json.dump(
-                    {"best_valid": float(best_valid),
-                    "selected_epoch": int(best_epoch),
-                    "test": float(test_acc),
-                    "time": elapsed_time},
+                    {
+                        "best_valid": float(best_valid),
+                        "selected_epoch": int(best_epoch),
+                        "test": float(test_acc),
+                        "time": elapsed_time,
+                        "l2": l2,
+                        "eta": eta,
+                        "HOG features": False,
+                    },
                     f,
                     indent=4
                 )
