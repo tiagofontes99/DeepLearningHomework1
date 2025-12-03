@@ -12,7 +12,7 @@ from matplotlib import pyplot as plt
 import time
 import sys
 import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))) # adicionar o path hm1/DeepLearningHomework1 para importar o modulo utils
 import utils
 
 class FeedforwardNetwork(nn.Module):
@@ -42,24 +42,26 @@ class FeedforwardNetwork(nn.Module):
         elif self.activation_type == "tanh":
             self.activation = nn.Tanh()
 
+        layers_list = []
         # create the network
         for i in range(self.layers):
             if i == 0:
                 # first layer
-                self.add_module(f'linear{i}', nn.Linear(self.n_features, self.hidden_size)) 
-                self.add_module(f'activation{i}', self.activation)
+                layers_list.append(nn.Linear(self.n_features, self.hidden_size))
             else:
                 # hidden layers
-                self.add_module(f'linear{i}', nn.Linear(self.hidden_size, self.hidden_size))
-                self.add_module(f'activation{i}', self.activation)
+                layers_list.append(nn.Linear(self.hidden_size, self.hidden_size))
+            
+            # activation function
+            layers_list.append(self.activation)
 
             if self.dropout > 0:
-                self.add_module(f'dropout{i}', nn.Dropout(self.dropout))
+                layers_list.append(nn.Dropout(self.dropout))
         
         # last layer
-        self.add_module(f'linear{self.layers}', nn.Linear(self.hidden_size, self.n_classes))
+        layers_list.append(nn.Linear(self.hidden_size, self.n_classes))
         # put all the layers together
-        self.network = nn.Sequential(*self.children())
+        self.network = nn.Sequential(*layers_list)
 
     def forward(self, x, **kwargs):
         """ Compute a forward pass through the FFN
@@ -101,7 +103,7 @@ def predict(model, X):
     Returns:
         preds: (n_examples)
     """
-    preds = model(X)
+    preds = model(X) 
     return preds
 
 
@@ -157,7 +159,7 @@ def main():
                         choices=['tanh', 'relu'], default='relu')
     parser.add_argument('-optimizer',
                         choices=['sgd', 'adam'], default='sgd')
-    parser.add_argument('-data_path', type=str, default='../emnist-letters.npz',)
+    parser.add_argument('-data_path', type=str, default='../../emnist-letters.npz',)
     opt = parser.parse_args()
 
     utils.configure_seed(seed=42)
@@ -207,16 +209,15 @@ def main():
     start = time.time()
 
     # evaluate without training (inicial evaluation)
-    model.eval()                                # desativa o dropoup (desliga neuronios aleatorios), batchnorm fixo e desabilita os gradientes ao usar torch.no_grad
+    model.eval()     # desativa o dropoup (desliga neuronios aleatorios), batchnorm fixo e desabilita os gradientes ao usar torch.no_grad
     initial_train_loss, initial_train_acc = evaluate(model, train_X, train_y, criterion)
     initial_val_loss, initial_val_acc = evaluate(model, dev_X, dev_y, criterion)
-    """
     train_losses.append(initial_train_loss)
     train_accs.append(initial_train_acc)
     valid_losses.append(initial_val_loss)
     valid_accs.append(initial_val_acc)
     print('initial val acc: {:.4f}'.format(initial_val_acc))
-    """
+   
     # train the model
     for ii in epochs:
         print('Training epoch {}'.format(ii))
@@ -261,11 +262,12 @@ def main():
         "Valid Loss": valid_losses,
     }
 
-    plot(epochs, losses, filename=f'ffn-training-loss-{config}.pdf')
+    epochs_plus_0 = torch.arange(0, opt.epochs + 1)  # incluir o initial evaluation (sem treino) antes da epoch 1
+    plot(epochs_plus_0, losses, filename=f'ffn-training-loss-{config}.pdf')
     print(f"Final Training Accuracy: {train_accs[-1]:.4f}")
     print(f"Best Validation Accuracy: {max(valid_accs):.4f}")
     val_accuracy = { "Valid Accuracy": valid_accs }
-    plot(epochs, val_accuracy, filename=f'ffn-validation-accuracy-{config}.pdf')
+    plot(epochs_plus_0, val_accuracy, filename=f'ffn-validation-accuracy-{config}.pdf')
 
 
 if __name__ == '__main__':

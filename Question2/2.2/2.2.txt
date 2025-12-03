@@ -1,0 +1,45 @@
+2.2(a)
+    Briefly comment on how the validation accuracy changes as the layer width increases.
+    R: Como se pode verificar nos dados obtidos, com o aumento das hidden units (layer width) o validation accuracy também aumenta. 
+       Em que com apenas 16 hidden units obteve-se validation accuracy de 0.760 e com 256 hidden units obteve-se o melhor resultado
+       de 0.907 de validation accuracy.
+    
+    Results:
+    Best Configuration for width=16: {'width': 16, 'lr': 0.001, 'dropout': 0.0, 'l2': 0.0, 'val_acc': 0.7603365182876587}
+    Best Configuration for width=32: {'width': 32, 'lr': 0.001, 'dropout': 0.0, 'l2': 0.0, 'val_acc': 0.8418750166893005}
+    Best Configuration for width=64: {'width': 64, 'lr': 0.001, 'dropout': 0.0, 'l2': 0.0, 'val_acc': 0.8736538290977478}
+    Best Configuration for width=128: {'width': 128, 'lr': 0.001, 'dropout': 0.0, 'l2': 0.0, 'val_acc': 0.8962980508804321}
+    Best Configuration for width=256: {'width': 256, 'lr': 0.001, 'dropout': 0.2, 'l2': 0.0, 'val_acc': 0.9072115421295166}
+    
+    Best Global Configuration:{'width': 256, 'lr': 0.001, 'dropout': 0.2, 'l2': 0.0}
+    Best Global Validation Accuracy: 0.907
+
+2.2(b) 
+    Comment on the training dynamics observed in these plots, including convergence behavior and whether there are any signs of underfitting or overfitting. 
+    
+    R: No plot da accuracy, verifica-se que no treino a cada epoch a accuracy aumenta mas na validation esta mantém-se igual apartir da epoch 10 aproximadamente,
+       o que significa que está a convergir para aproximadamente 0.90 de accuracy. Quanto ao overfitting, pode-se dizer que há sinal de overfitting, dado que no treino
+       a accuracy é cada vez mais alta e na validação esta mantém-se igual, ou seja, não há melhoria na validação.
+
+       No plot da loss, verifica-se que no treino a cada epoch a loss diminui (tende a diminuir a cada epoch) mas, ao contrario, na validação começa a aumentar ao invés de dimunuir
+       apartir da epoch 13 aproximadamente. Quanto ao overfitting, pode-se dizer que há sinal de overfitting, dado que no treino
+       a loss é cada vez mais baixa e na validação aumenta.
+
+    Report the test accuracy of this model and briefly comment on its generalization ability.
+    
+    R: The Test accuracy is very high (0.904) and very close to the validation accuracy of 0.907, which means that the model generalizes very weel to new unseen data.
+
+    Results: Best Model Test Accuracy : 0.904
+
+2.2(c)
+    Analyze how model width affects the network’s capacity to interpolate the training data.
+    R:
+    
+    Discuss whether increased width consistently results in improved training accuracy.
+    R:
+
+    Is the training accuracy converging to any value when you increase the number of units?
+    R:
+
+    How does this relate to the Universal Approximation Theorem? What would be the expected training accuracy with an infinite-width one-layer FFN?
+    R:
