@@ -1,9 +1,4 @@
 2.2(a)
-    Briefly comment on how the validation accuracy changes as the layer width increases.
-    R: Como se pode verificar nos dados obtidos, com o aumento das hidden units (layer width) o validation accuracy também aumenta. 
-       Em que com apenas 16 hidden units obteve-se validation accuracy de 0.760 e com 256 hidden units obteve-se o melhor resultado
-       de 0.907 de validation accuracy.
-    
     Results:
     Best Configuration for width=16: {'width': 16, 'lr': 0.001, 'dropout': 0.0, 'l2': 0.0, 'val_acc': 0.7603365182876587}
     Best Configuration for width=32: {'width': 32, 'lr': 0.001, 'dropout': 0.0, 'l2': 0.0, 'val_acc': 0.8418750166893005}
@@ -14,32 +9,54 @@
     Best Global Configuration:{'width': 256, 'lr': 0.001, 'dropout': 0.2, 'l2': 0.0}
     Best Global Validation Accuracy: 0.907
 
-2.2(b) 
-    Comment on the training dynamics observed in these plots, including convergence behavior and whether there are any signs of underfitting or overfitting. 
-    
-    R: No plot da accuracy, verifica-se que no treino a cada epoch a accuracy aumenta mas na validation esta mantém-se igual apartir da epoch 10 aproximadamente,
-       o que significa que está a convergir para aproximadamente 0.90 de accuracy. Quanto ao overfitting, pode-se dizer que há sinal de overfitting, dado que no treino
-       a accuracy é cada vez mais alta e na validação esta mantém-se igual, ou seja, não há melhoria na validação.
+    Briefly comment on how the validation accuracy changes as the layer width increases.
+    R: As can be seen in the data obtained, with the increase in hidden units (layer width), the validation accuracy also increases. 
+       With only 16 hidden units, a validation accuracy of 0.760 was obtained, and with 256 hidden units, the best result
+       of 0.907 validation accuracy was obtained. Other aspect, is that when the number of hidden units are higher the difference of the
+       gains in the results are lower, for istance, 16 to 32 units: 0.760 to 0.841 but for 128 to 256 the difference was much lower
+       0.896 to 0.907.
 
-       No plot da loss, verifica-se que no treino a cada epoch a loss diminui (tende a diminuir a cada epoch) mas, ao contrario, na validação começa a aumentar ao invés de dimunuir
-       apartir da epoch 13 aproximadamente. Quanto ao overfitting, pode-se dizer que há sinal de overfitting, dado que no treino
-       a loss é cada vez mais baixa e na validação aumenta.
+2.2(b) 
+    Results: Best Model Test Accuracy : 0.904
+    
+    Comment on the training dynamics observed in these plots, including convergence behavior and whether there are any signs of underfitting or overfitting. 
+    R: In the accuracy plot, it can be seen that in training, accuracy increases with each epoch, but in validation, it remains the same from approximately
+       epoch 10 onwards, which means that it is converging to approximately 0.90 of accuracy. As for overfitting, there are signs of overfitting, given that in
+       training the accuracy is increasingly higher and in validation it remains the same, i.e., there is no improvement in validation.
+
+       In the loss plot, it can be seen that in training, the loss decreases with each epoch (it tends to decrease with each epoch) but, on the contrary, in
+       validation it begins to increase instead of decreasing from approximately epoch 13 onwards. As for overfitting, it can be said that there are signs of
+       overfitting, given that in training the loss is increasingly lower and in validation it increases.
 
     Report the test accuracy of this model and briefly comment on its generalization ability.
-    
-    R: The Test accuracy is very high (0.904) and very close to the validation accuracy of 0.907, which means that the model generalizes very weel to new unseen data.
-
-    Results: Best Model Test Accuracy : 0.904
+    R: The test accuracy was very high (0.904) and close to 1 (highest value possible) which means that the model generalizes very well to new unseen data.
+       Moreover, its value was very close to the validation accuracy of 0.907 (only 0.003 of difference), which means that the model didn't overfitted.
+       All in all, however the validation loss starts to increase at epoch 13 instead of decreasing (signals of overfitting), the test results were not affected, 
+       this is, the model generalized well to the new unseen data.   
 
 2.2(c)
+    Results:
+    Width: 16, Final Training Accuracy: 0.773
+    Width: 32, Final Training Accuracy: 0.864
+    Width: 64, Final Training Accuracy: 0.915
+    Width: 128, Final Training Accuracy: 0.950
+    Width: 256, Final Training Accuracy: 0.959
+
     Analyze how model width affects the network’s capacity to interpolate the training data.
-    R:
+    R: According to the plot of training accuracy as a function of width, it can be said that the greater the width, the greater the training accuracy, i.e.,
+     greater interpolation capacity.
     
     Discuss whether increased width consistently results in improved training accuracy.
-    R:
+    R: According to the plot of training accuracy as a function of width, it can be said that the greater the width, the greater the training accuracy.
 
     Is the training accuracy converging to any value when you increase the number of units?
-    R:
+    R: Yes, the training accuracy for 16 width was 0.773 and for width 256 was 0.959, so this means that it is converving approximate1y to 1, as we increase
+       the number of units.
 
-    How does this relate to the Universal Approximation Theorem? What would be the expected training accuracy with an infinite-width one-layer FFN?
-    R:
+    How does this relate to the Universal Approximation Theorem?
+    R: "The Universal Approximation Theorem states that a feedforward neural network with a single hidden layer and a sufficient number of neurons can
+       approximate any continuous function with arbitrary accuracy." Our results relates with the Universal Approximation Theorem, since with higher number of neurons
+        the closest is the approximation of accuracy to 1.
+
+    What would be the expected training accuracy with an infinite-width one-layer FFN?
+    R: Based on the data obtained, for an infinite-width one-layer FFN, it is expected that the training accuracy goes to 1.  

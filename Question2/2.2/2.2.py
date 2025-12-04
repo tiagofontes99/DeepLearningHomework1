@@ -3,6 +3,7 @@
 # Deep Learning Homework 1
 
 import argparse
+from cProfile import label
 
 import torch
 from torch.utils.data import DataLoader
@@ -143,7 +144,6 @@ def plot(epochs, plottables, filename=None, ylim=None):
     if filename:
         plt.savefig(filename, bbox_inches='tight')
 
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-epochs', default=30, type=int,
@@ -212,12 +212,13 @@ def main():
     best_model_global_train_accs = []
     best_model_global_val_losses = []
     best_model_global_val_accs = []
+    # para o 2.2(c)
+    best_configs_by_width = {}
 
     start = time.time()
     for width in grid_search_params['hidden_size']:
         # para o 2.2(c)
         best_val_acc_for_width = 0.0       # reinicia a cada width 
-        best_config_for_width = None
 
         for lr in grid_search_params['learning_rate']:
             for dropout in grid_search_params['dropout']:
@@ -276,7 +277,8 @@ def main():
                     # atualizar best config do width atual
                     if best_val_acc > best_val_acc_for_width:
                         best_val_acc_for_width = best_val_acc
-                        best_config_for_width = {
+
+                        best_configs_by_width[width] = {
                             "width": width,
                             "lr": lr,
                             "dropout": dropout,
@@ -306,7 +308,7 @@ def main():
                         best_model_global_val_accs = valid_accs.copy()
 
         # best-performing configuration for each width (according to validation accuracy)
-        print(f"\nBest Configuration for width={width}: {best_config_for_width}\n")
+        print(f"\nBest Configuration for width={width}: {best_configs_by_width[width]}\n")
         print(f"Best Validation Accuracy for width={width}: {best_val_acc_for_width:.3f}\n")
     
     # report time taken for training all models
@@ -344,7 +346,7 @@ def main():
     plot(epochs, losses, filename=f'2.2b_best_model_loss-{config_best_model}.pdf')
     plot(epochs, accuracies, filename=f'2.2b_best_model_accuracy-{config_best_model}.pdf')
     
-    # Report the test accuracy of this model and briefly comment on its generalization ability.
+    # Report the test accuracy of the best model
     criterion = nn.CrossEntropyLoss().to(device)
     model.eval()
     test_loss, test_acc = evaluate(model, test_X, test_y, criterion)
@@ -357,6 +359,7 @@ def main():
     widths = grid_search_params['hidden_size']
 
     for width in widths:
+        cfg = best_configs_by_width[width]
         # re-initialize the model for each width
         model = FeedforwardNetwork(
             n_classes,
@@ -364,7 +367,7 @@ def main():
             width,
             grid_search_params['layers'][0],
             grid_search_params['activation'][0],
-            dropout=0.0                         # dropout não é usado na avaliação
+            dropout=cfg["dropout"]                       
         ).to(device)                            # mover o modelo para a GPU
 
         # carregar o melhor modelo para cada width
@@ -373,12 +376,15 @@ def main():
         model.eval()
         train_loss, train_acc = evaluate(model, train_X, train_y, criterion)
         final_train_accuracies.append(train_acc.item())
+        print(f"Width: {width}, Final Training Accuracy: {train_acc.item():.3f}")
 
     # plot the final training accuracy as a function of hidden-layer width
-    plot(widths,
-        {'Final Training Accuracy': final_train_accuracies},
-        filename='2.2c_final_training_acc_vs_width.pdf',
-    )
+    plt.clf()
+    plt.xlabel('Hidden Layer Width')
+    plt.ylabel('Final Training Accuracy')
+    plt.plot(widths, final_train_accuracies, label='Final Training Accuracy')
+    plt.legend()
+    plt.savefig('2.2c_final_training_acc_vs_width.pdf', bbox_inches='tight')
 
 
 if __name__ == '__main__':
