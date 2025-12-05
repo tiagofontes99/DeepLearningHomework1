@@ -54,9 +54,9 @@
        the number of units.
 
     How does this relate to the Universal Approximation Theorem?
-    R: "The Universal Approximation Theorem (UAT) states that a single-hidden-layer neural network, with a finite number of neurons and certain activation functions
+    R: "The Universal Approximation Theorem (UAT) states that a single-hidden-layer neural network, with a finite number of neurons and non-polynomial activation functions
         (like sigmoid or ReLU), can approximate any continuous function to any desired level of accuracy." Our results relates with the Universal Approximation Theorem,
-        since as we increase the number of units, the network gains greater representational capacity and with that, can approximate better the function that maps the inputs
+        since as we increase the number of units (wider network), the network gains greater representational capacity and with that, can approximate better the function that maps the inputs
         to the correct classes, thus higher accuracy.
 
     What would be the expected training accuracy with an infinite-width one-layer FFN?
