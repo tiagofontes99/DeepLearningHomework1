@@ -44,7 +44,7 @@
 
     Analyze how model width affects the network’s capacity to interpolate the training data.
     R: According to the plot of training accuracy as a function of width, it can be said that the greater the width, the greater the training accuracy, i.e.,
-     greater interpolation capacity.
+       greater interpolation capacity. This means that single layer networks with larger number of units are able to learn better the relationships in the training set.
     
     Discuss whether increased width consistently results in improved training accuracy.
     R: According to the plot of training accuracy as a function of width, it can be said that the greater the width, the greater the training accuracy.
@@ -54,9 +54,10 @@
        the number of units.
 
     How does this relate to the Universal Approximation Theorem?
-    R: "The Universal Approximation Theorem states that a feedforward neural network with a single hidden layer and a sufficient number of neurons can
-       approximate any continuous function with arbitrary accuracy." Our results relates with the Universal Approximation Theorem, since with higher number of neurons
-        the closest is the approximation of accuracy to 1.
+    R: "The Universal Approximation Theorem (UAT) states that a single-hidden-layer neural network, with a finite number of neurons and certain activation functions
+        (like sigmoid or ReLU), can approximate any continuous function to any desired level of accuracy." Our results relates with the Universal Approximation Theorem,
+        since as we increase the number of units, the network gains greater representational capacity and with that, can approximate better the function that maps the inputs
+        to the correct classes, thus higher accuracy.
 
     What would be the expected training accuracy with an infinite-width one-layer FFN?
     R: Based on the data obtained, for an infinite-width one-layer FFN, it is expected that the training accuracy goes to 1.  
