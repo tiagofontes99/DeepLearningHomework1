@@ -8,7 +8,6 @@ from matplotlib import pyplot as plt
 import numpy as np
 import utils
 
-
 class FeedforwardNetwork(nn.Module):
     def __init__(
             self, n_classes, n_features, hidden_size, layers,
@@ -64,7 +63,8 @@ def evaluate(model, X, y, criterion):
 
 
 def plot(epochs, plottables, filename=None, ylim=None, ylabel=None):
-    plt.clf()
+    """Plota curvas, guarda em PDF (se filename não for None) e mostra no Colab."""
+    plt.figure()
     plt.xlabel('Epoch')
     if ylabel is not None:
         plt.ylabel(ylabel)
@@ -75,6 +75,7 @@ def plot(epochs, plottables, filename=None, ylim=None, ylabel=None):
         plt.ylim(ylim)
     if filename:
         plt.savefig(filename, bbox_inches='tight')
+    plt.show()
 
 
 def main():
@@ -101,8 +102,8 @@ def main():
     )
 
     train_X, train_y = dataset.X.to(device), dataset.y.to(device)
-    dev_X, dev_y = dataset.dev_X.to(device), dataset.dev_y.to(device)
-    test_X, test_y = dataset.test_X.to(device), dataset.test_y.to(device)
+    dev_X, dev_y     = dataset.dev_X.to(device), dataset.dev_y.to(device)
+    test_X, test_y   = dataset.test_X.to(device), dataset.test_y.to(device)
 
     n_classes = torch.unique(dataset.y).shape[0]
     n_feats = dataset.X.shape[1]
@@ -166,7 +167,7 @@ def main():
             val_accs.append(val_acc.item())
 
             print(
-                f"Epoch {epoch + 1:02d} | "
+                f"Epoch {epoch+1:02d} | "
                 f"train_loss={train_loss.item():.4f} "
                 f"| val_loss={val_loss.item():.4f} "
                 f"| val_acc={val_acc.item():.4f}"
@@ -208,6 +209,7 @@ def main():
     print("\nBest Global Configuration:", best_global_config)
     print(f"Best Global Validation Accuracy: {best_val_global:.3f}")
 
+    # avaliar melhor modelo (para test accuracy)
     model = FeedforwardNetwork(
         n_classes,
         n_feats,
@@ -248,12 +250,13 @@ def main():
     depths_sorted = sorted(final_train_acc_by_depth.keys())
     final_train_accs = [final_train_acc_by_depth[d] for d in depths_sorted]
 
-    plt.clf()
+    plt.figure()
     plt.xlabel('Depth (number of hidden layers)')
     plt.ylabel('Final Training Accuracy')
     plt.plot(depths_sorted, final_train_accs, marker='o', label='Final Training Accuracy')
     plt.legend()
     plt.savefig('2.3c_final_training_acc_vs_depth.pdf', bbox_inches='tight')
+    plt.show()
 
     print("\nFinal training accuracies by depth:")
     for d in depths_sorted:
