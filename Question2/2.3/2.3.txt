@@ -1,0 +1,62 @@
+2.3(a)
+    Results:
+    Best Validation Accuracy for depth=1: 0.842
+    Best Validation Accuracy for depth=3: 0.867
+    Best Validation Accuracy for depth=5: 0.865
+    Best Validation Accuracy for depth=7: 0.860
+    Best Validation Accuracy for depth=9: 0.851
+
+    Best Global Configuration: {'depth': 3, 'hidden_size': 32, 'lr': 0.001, 'dropout': 0.0, 'l2': 0.0}
+    Best Global Validation Accuracy: 0.867
+
+    Briefly comment on how the validation accuracy changes as the depth increases.
+    R: When increasing depth from 1 to 3, there is a clear improvement in validation accuracy (0.842 → 0.867). 
+       However, after depth=3, the performance starts dropping slightly, as the validation accuracies for depth 5, 7,
+       and 9 are all below that value. This means that adding more layers did not result in better performance, and
+       the best depth for this setup was depth=3.
+
+
+
+2.3(b)
+    Results: Best Depth Test Accuracy: 0.869
+
+    Comment on the training dynamics observed in these plots, including convergence behavior and signs of underfitting/overfitting.
+    R: For depth=3, the training accuracy keeps improving throughout the epochs, while the validation accuracy improves
+       mainly during the first half of training and then stabilizes. This shows that the model converges well. There is
+       some overfitting since training accuracy is higher than validation accuracy, but the difference is not very large.
+
+       Looking at the losses, training loss decreases steadily, but validation loss stops decreasing after a certain point,
+       which is another indication of slight overfitting. Still, it never diverged significantly.
+
+    Report the test accuracy of this model and briefly comment on its generalization ability.
+    R: The test accuracy for the best configuration (depth=3) was 0.869, which is almost the same as the best validation
+       accuracy (0.867). Since both results are very close, we can say that the model generalized well and that the
+       validation results reflected the true generalization performance.
+
+
+
+2.3(c)
+    Results:
+    Depth=1, Final Training Accuracy: 0.866
+    Depth=3, Final Training Accuracy: 0.896
+    Depth=5, Final Training Accuracy: 0.894
+    Depth=7, Final Training Accuracy: 0.883
+    Depth=9, Final Training Accuracy: 0.877
+
+    Analyze how model depth affects interpolation of training data.
+    R: Increasing depth improves training accuracy up to depth=3 (0.896), meaning deeper networks initially learn the
+       training data better. After that, training accuracy drops slightly, which suggests that deeper networks are harder
+       to optimize under the same settings.
+
+    Discuss whether increased depth consistently results in improved training accuracy.
+    R: No. Accuracy goes up until depth=3 but then decreases. So increasing depth does not consistently lead to a better
+       fit of the training data.
+
+    Is the training accuracy converging to any value as depth increases?
+    R: No. The training accuracy does not appear to increase after depth=3. Instead, it goes down, so there is no sign of
+       convergence toward a higher value by just adding more layers.
+
+    How does this relate to the Universal Approximation Theorem?
+    R: In theory, more depth increases the representational capacity of the model, but this only helps if the network can
+       be trained effectively. In this case, deeper networks did not perform better, likely because optimization became
+       harder, which prevented them from reaching better accuracies despite having more layers.
