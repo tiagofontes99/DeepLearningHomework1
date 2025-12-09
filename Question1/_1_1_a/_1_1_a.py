@@ -4,13 +4,15 @@
 #Feito por Tiago Fontes
 
 import argparse
+import os
 import time
 import pickle
 import json
 import numpy as np
 import utils
-DATA_PATH = "emnist-letters.npz"
-data = np.load(DATA_PATH)
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+DATA_PATH = os.path.join(ROOT, "emnist-letters.npz")
+
 
 
 
@@ -160,7 +162,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--epochs', default=20, type=int,
                         help="""Number of epochs to train for.""")
-    parser.add_argument('--data-path', type=str, default=data)
+    parser.add_argument('--data-path', type=str, default=DATA_PATH)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--save-path", type=str, default="perceptron.npz")
     parser.add_argument("--accuracy-plot", default="Q1-perceptron-accs.pdf")

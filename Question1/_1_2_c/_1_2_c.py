@@ -9,10 +9,11 @@ import pickle
 import json
 import numpy as np
 import utils
-import extractHOGFeatures
+from Question1.extractHOGFeatures import extract_hog_features
 import os
 
-DATA_PATH = r"C:\Users\CeX\PycharmProjects\DeepLearningHomework1\Question1\emnist-letters.npz"
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+DATA_PATH = os.path.join(ROOT, "emnist-letters.npz")
 
 '''Para logistic Regression multiclass usmos a softmax 
 a formula é p(y = k|x) = e^wk.T@x/ sumj(e^wj.T@x)'''
@@ -98,9 +99,13 @@ class LogisticRegression:
         return {"eta": self.eta, "pen": self.l2pen, "HOG features": self.hog}
 
 
+
+
 def main(args):
     utils.configure_seed(seed=args.seed)
     print(args)
+    def add_bias(X):
+        return np.concatenate([np.ones((X.shape[0], 1), dtype=X.dtype), X], axis=1)
 
     data = utils.load_dataset(data_path=args.data_path, bias=True)
     X_train, y_train = data["train"]
@@ -118,14 +123,17 @@ def main(args):
     hog = False
     for i in range(2):
         if i == 1:
-            X_train = extractHOGFeatures.extract_hog_features(X_train)
-            X_valid = extractHOGFeatures.extract_hog_features(X_valid)
-            X_test = extractHOGFeatures.extract_hog_features(X_test)
+            X_train = extract_hog_features(X_train)
+            X_valid = extract_hog_features(X_valid)
+            X_test = extract_hog_features(X_test)
             hog= True
+            X_train = add_bias(X_train)
+            X_valid = add_bias(X_valid)
+            X_test = add_bias(X_test)
         for eta in eta_value:
             for l2 in l2pen:
                 best_valid = 0.0
-                best_model = False
+                save_best_model = False
 
                 model = LogisticRegression(n_classes, X_train.shape[1], eta, l2)
 
@@ -156,7 +164,6 @@ def main(args):
 
                     if valid_acc > best_valid:
                         best_valid = valid_acc
-                        best_epoch = i
                         print(f"New best model at epoch {i} with val acc = {valid_acc:.4f}")
 
                     if best_valid > best_global:
@@ -164,7 +171,7 @@ def main(args):
                         model.save(args.save_path)
                         best_eta=eta
                         best_l2 = l2
-                        best_model=True
+                        save_best_model=True
                         model.save(args.save_path)
                         print(f"New best global with param = l2: {l2}, eta {eta}, hog { hog}, val acc = {valid_acc:.4f}")
                         with open(args.best_score, "w") as f:
@@ -185,7 +192,7 @@ def main(args):
                 test_acc = best_model.evaluate(X_test, y_test)
 
                 print('Best model test acc: {:.4f}'.format(test_acc))
-                if best_model:
+                if save_best_model:
                     utils.plot(
                         "Epoch", "Accuracy",
                         {"train": (epochs, train_accs), "valid": (epochs, valid_accs)},

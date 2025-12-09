@@ -5,14 +5,18 @@
 #Implementação métoodo HOG  Dalal & Triggs (2005), “Histograms of Oriented Gradients for Human Detection”.
 
 import argparse
+import os
 import time
 import pickle
 import json
 import numpy as np
-from Question1 import utils
-from Question1 import extractHOGFeatures
-DATA_PATH = r"C:\Users\CeX\Desktop\Deep Learning\DeepLearingHomework1\Question1\emnist-letters.npz"
+import utils
+from Question1.extractHOGFeatures import extract_hog_features
 
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+DATA_PATH = os.path.join(ROOT, "emnist-letters.npz")
+
+#data = np.load(DATA_PATH)
 
 '''Para logistic Regression multiclass usmos a softmax 
 a formula é p(y = k|x) = e^wk.T@x/ sumj(e^wj.T@x)'''
@@ -98,19 +102,22 @@ class LogisticRegression:
 def main(args):
     utils.configure_seed(seed=args.seed)
 
-    data = utils.load_dataset(data_path=args.data_path, bias=True)
+    data = utils.load_dataset(data_path=args.data_path, bias=False)
     X_train, y_train = data["train"]
     X_valid, y_valid = data["dev"]
     X_test, y_test = data["test"]
 
-    #Extrair HOG features
-    print("extracted 0")
-    X_train = extractHOGFeatures.extract_hog_features(X_train)
-    print("extracted 1")
-    X_valid = extractHOGFeatures.extract_hog_features(X_valid)
-    print("extracted 2")
-    X_test = extractHOGFeatures.extract_hog_features(X_test)
-    print("extracted 3")
+
+    X_train = extract_hog_features(X_train)
+    X_valid = extract_hog_features(X_valid)
+    X_test = extract_hog_features(X_test)
+
+    def add_bias(X):
+        return np.concatenate([np.ones((X.shape[0], 1), dtype=X.dtype), X], axis=1)
+
+    X_train = add_bias(X_train)
+    X_valid = add_bias(X_valid)
+    X_test = add_bias(X_test)
 
     n_classes = np.unique(y_train).size
     n_feats = X_train.shape[1]
