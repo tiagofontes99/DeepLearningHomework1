@@ -27,7 +27,7 @@ class MultiLayerPerceptron:
         self.W2 = np.random.normal(loc=0.1, scale=0.1, size=(n_classes, hidden_dim))
         self.b2 = np.zeros(n_classes)
 
-    # ReLU e derivada (vetorizadas)
+    # ReLU e derivada
     def relu(self, z):
         return np.maximum(0, z)
 
@@ -39,9 +39,9 @@ class MultiLayerPerceptron:
         x: (n_features,)
         devolve z1, h, z2
         """
-        z1 = self.W1 @ x + self.b1          # (hidden_dim,)
-        h  = self.relu(z1)                  # (hidden_dim,)
-        z2 = self.W2 @ h + self.b2          # (n_classes,)
+        z1 = self.W1 @ x + self.b1
+        h  = self.relu(z1)
+        z2 = self.W2 @ h + self.b2
         return z1, h, z2
 
     def predict(self, X):
@@ -70,7 +70,7 @@ class MultiLayerPerceptron:
         # Forward
         z1, h, z2 = self.forward(x_i)
 
-        # Softmax estável numericamente
+        # Softmax
         z2_shift = z2 - np.max(z2)
         exp_scores = np.exp(z2_shift)
         probs = exp_scores / np.sum(exp_scores)
@@ -197,7 +197,7 @@ def main(args):
         filename=args.accuracy_plot
     )
 
-    # Plot do train loss (podes criar outro ficheiro, ex: Q3-mlp-loss.pdf)
+    # Plot do train loss
     utils.plot(
         "Epoch", "Train loss",
         {"train_loss": (epochs, train_losses)},
