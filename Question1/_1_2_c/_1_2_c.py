@@ -77,7 +77,6 @@ class LogisticRegression:
         grad_W = np.outer(probs - y_onehot, x_i)  # (C, F)
 
         self.W -= self.eta * (grad_W + self.l2pen * self.W)
-        pass
 
     def train_epoch(self, X, y):
         """
@@ -86,8 +85,6 @@ class LogisticRegression:
         """
         for i in range(X.shape[0]):
             self.update_weight(X[i], y[i])
-
-        pass
 
     def predict(self, X):
         """

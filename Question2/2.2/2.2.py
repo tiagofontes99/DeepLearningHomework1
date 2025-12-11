@@ -257,6 +257,8 @@ def main():
                         model.eval()
                         train_loss, train_acc = evaluate(model, train_X, train_y, criterion)
                         val_loss, val_acc = evaluate(model, dev_X, dev_y, criterion)
+                        
+                        # guardar as losses e accuracies por epoch
                         train_losses.append(train_loss.item())
                         valid_losses.append(val_loss.item())
                         train_accs.append(train_acc.item())
@@ -326,7 +328,7 @@ def main():
     df.to_csv("2.2a_gridsearch_results.csv", index=False)
 
     # 2.2(b) Plot the training and validation loss and the training and validation accuracy over epochs of the best model
-    model.load_state_dict(torch.load("best_model_global.pt")) # carregar o melhor modelo global
+    model.load_state_dict(torch.load("best_model_global.pt", weights_only=True)) # carregar o melhor modelo global
     config_best_model = (
         f"width-{best_global_config['width']}-lr-{best_global_config['lr']}"
         f"-dropout-{best_global_config['dropout']}-l2-{best_global_config['l2']}"
@@ -372,7 +374,7 @@ def main():
         ).to(device)                            # mover o modelo para a GPU
 
         # carregar o melhor modelo para cada width
-        model.load_state_dict(torch.load(f"best_model_width{width}.pt"))
+        model.load_state_dict(torch.load(f"best_model_width{width}.pt", weights_only=True))
         # avaliar a accuracy no training set
         model.eval()
         train_loss, train_acc = evaluate(model, train_X, train_y, criterion)
