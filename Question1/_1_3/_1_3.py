@@ -8,9 +8,14 @@ import time
 import pickle
 import json
 import numpy as np
+
+import os
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+DATA_PATH = os.path.join(ROOT, "emnist-letters.npz")
+
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))) # para poder dar import utils
 import utils
-
-
 
 class MultiLayerPerceptron:
     def __init__(self, n_classes, n_features, hidden_dim=100, eta=0.001):
@@ -220,7 +225,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--epochs', default=20, type=int,
                         help="""Number of epochs to train for.""")
-    parser.add_argument('--data-path', type=str, default="emnist-letters.npz")
+    parser.add_argument('--data-path', type=str, default=DATA_PATH)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--save-path", type=str, default="mlp.npz")
     parser.add_argument("--accuracy-plot", default="Q3-mlp-accs.pdf")

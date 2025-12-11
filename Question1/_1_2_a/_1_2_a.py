@@ -9,13 +9,14 @@ import time
 import pickle
 import json
 import numpy as np
-import utils
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DATA_PATH = os.path.join(ROOT, "emnist-letters.npz")
 
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+import utils
 
-
-'''Para logistic Regression multiclass usmos a softmax 
+'''Para logistic Regression multiclass usamos a softmax 
 a formula é p(y = k|x) = e^wk.T@x/ sumj(e^wj.T@x)'''
 
 class LogisticRegression:
@@ -74,7 +75,6 @@ class LogisticRegression:
 
 
         self.W -= self.eta * (grad_W + self.l2pen * self.W)
-        pass
 
     def train_epoch(self, X, y):
         """
@@ -83,8 +83,6 @@ class LogisticRegression:
         """
         for i in range(X.shape[0]):
             self.update_weight(X[i], y[i])
-
-        pass
 
     def predict(self, X):
         """
@@ -173,7 +171,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--epochs', default=20, type=int,
                         help="""Number of epochs to train for.""")
-    parser.add_argument('--data-path', type=str, default="emnist-letters.npz")
+    parser.add_argument('--data-path', type=str, default=DATA_PATH)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--save-path", type=str, default="logistic-A.npz")
     parser.add_argument("--accuracy-plot", default="Q1-logistic-accs-A.pdf")

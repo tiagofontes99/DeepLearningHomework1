@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 # Deep Learning Homework 1
+# Done by Gonçalo Santos
 
 import argparse
 

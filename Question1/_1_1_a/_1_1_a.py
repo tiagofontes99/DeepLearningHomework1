@@ -9,10 +9,12 @@ import time
 import pickle
 import json
 import numpy as np
-import utils
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DATA_PATH = os.path.join(ROOT, "emnist-letters.npz")
 
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+import utils
 
 
 
@@ -62,8 +64,6 @@ class Perceptron:
             self.W[y_i] += self.eta *x_i
             self.W[predict] -= self.eta *x_i
 
-        pass
-
     def train_epoch(self, X, y):
         """
         X (n_examples, n_features): features for the whole dataset
@@ -71,8 +71,6 @@ class Perceptron:
         """
         for i in range(X.shape[0]):
             self.update_weight(X[i], y[i])
-
-        pass
 
     def predict(self, X):
         """

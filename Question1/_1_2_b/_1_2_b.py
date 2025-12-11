@@ -10,11 +10,15 @@ import time
 import pickle
 import json
 import numpy as np
-import utils
-from Question1.extractHOGFeatures import extract_hog_features
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DATA_PATH = os.path.join(ROOT, "emnist-letters.npz")
+
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))   # para poder dar import utils
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))         # para poder dar import extractHOGFeatures
+import utils
+from Question1.extractHOGFeatures import extract_hog_features
 
 #data = np.load(DATA_PATH)
 

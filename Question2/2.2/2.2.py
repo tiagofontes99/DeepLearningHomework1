@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 # Deep Learning Homework 1
+# Done by Gonçalo Santos
 
 import argparse
 from cProfile import label
@@ -236,7 +237,7 @@ def main():
                     ).to(device) # mover o modelo para a GPU
                     
                     # set the loss criterion
-                    criterion = nn.CrossEntropyLoss().to(device)
+                    criterion = nn.CrossEntropyLoss()
                     # set the Adam optimizer
                     optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=l2_decay)
                     
@@ -320,12 +321,12 @@ def main():
     print("Best Global Configuration:\n", best_global_config)
     print(f"Best Global Validation Accuracy: {best_val_acc_global:.3f}\n")
 
-    # convert and save summary table to a csv
+    # convert and save summary table to a csv for 2.2(a)
     df = pd.DataFrame(summary_table, columns=["width", "lr", "dropout", "l2", "best_val_acc"])
     df.to_csv("2.2a_gridsearch_results.csv", index=False)
 
-    # 2.2(b) Plot the training loss and validation accuracy over epochs of the best model
-    model.load_state_dict(torch.load("best_model_global.pt", weights_only=True)) # carregar o melhor modelo global
+    # 2.2(b) Plot the training and validation loss and the training and validation accuracy over epochs of the best model
+    model.load_state_dict(torch.load("best_model_global.pt")) # carregar o melhor modelo global
     config_best_model = (
         f"width-{best_global_config['width']}-lr-{best_global_config['lr']}"
         f"-dropout-{best_global_config['dropout']}-l2-{best_global_config['l2']}"
@@ -347,7 +348,7 @@ def main():
     plot(epochs, accuracies, filename=f'2.2b_best_model_accuracy-{config_best_model}.pdf')
     
     # Report the test accuracy of the best model
-    criterion = nn.CrossEntropyLoss().to(device)
+    criterion = nn.CrossEntropyLoss()
     model.eval()
     test_loss, test_acc = evaluate(model, test_X, test_y, criterion)
     print(f"Best Model Test Accuracy : {test_acc.item():.3f}")
@@ -371,7 +372,7 @@ def main():
         ).to(device)                            # mover o modelo para a GPU
 
         # carregar o melhor modelo para cada width
-        model.load_state_dict(torch.load(f"best_model_width{width}.pt", weights_only=True))
+        model.load_state_dict(torch.load(f"best_model_width{width}.pt"))
         # avaliar a accuracy no training set
         model.eval()
         train_loss, train_acc = evaluate(model, train_X, train_y, criterion)

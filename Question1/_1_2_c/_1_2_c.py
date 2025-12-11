@@ -4,16 +4,21 @@
 # Feito por Tiago Fontes
 
 import argparse
+import sys
 import time
 import pickle
 import json
 import numpy as np
-import utils
-from Question1.extractHOGFeatures import extract_hog_features
 import os
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 DATA_PATH = os.path.join(ROOT, "emnist-letters.npz")
+
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))   # para poder dar import utils
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))         # para poder dar import extractHOGFeatures
+import utils
+from Question1.extractHOGFeatures import extract_hog_features
 
 '''Para logistic Regression multiclass usmos a softmax 
 a formula é p(y = k|x) = e^wk.T@x/ sumj(e^wj.T@x)'''
