@@ -2,7 +2,7 @@
 
 # Deep Learning Homework 1
 #Feito por Tiago Fontes
-
+#CHATGPT USADO PARA CORREÇÃO DE CODIGO, VISUALIZAÇÃO DE FORMULAS E ACOMPANHAMENTO DA LÓGICA
 import argparse
 import os
 import time

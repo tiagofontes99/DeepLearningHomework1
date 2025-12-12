@@ -26,6 +26,7 @@ class MultiLayerPerceptron:
 
         # Inicialização
         # W ~ N(µ, σ^2) com µ = 0.1, σ = 0.1
+        #vias a 0 como dias enunciado
         self.W1 = np.random.normal(loc=0.1, scale=0.1, size=(hidden_dim, n_features))
         self.b1 = np.zeros(hidden_dim)
 
@@ -70,6 +71,9 @@ class MultiLayerPerceptron:
         y_i: label em [1..n_classes]
         devolve o loss da amostra (para logging)
         """
+
+        ##Nesta parte tive de me auxiliar mais no chatGPT
+        ##porque nao estava a perceber como fazer a backpropagation
         y_idx = y_i - 1  # converter para 0-based
 
         # Forward

@@ -3,7 +3,7 @@
 # Deep Learning Homework 1
 #Feito por Tiago Fontes
 #Implementação métoodo HOG  Dalal & Triggs (2005), “Histograms of Oriented Gradients for Human Detection”.
-
+#CHATGPT USADO PARA PESQUISAS E CRIAÇÃO DO extract_HOF_features.py hog descriptors nao foi feito por mim
 import argparse
 import os
 import time

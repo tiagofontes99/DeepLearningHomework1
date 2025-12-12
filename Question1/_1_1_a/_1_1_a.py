@@ -2,7 +2,7 @@
 
 # Deep Learning Homework 1
 #Feito por Tiago Fontes
-
+#CHATGPT USADO PARA CORREÇÃO E FORMULAS DE MLP
 import argparse
 import os
 import time
