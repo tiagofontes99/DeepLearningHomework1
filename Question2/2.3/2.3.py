@@ -6,6 +6,10 @@ from torch.utils.data import DataLoader
 import torch.nn as nn
 from matplotlib import pyplot as plt
 import numpy as np
+
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))) # adicionar o path hm1/DeepLearningHomework1 para importar o modulo utils
 import utils
 
 class FeedforwardNetwork(nn.Module):
@@ -92,7 +96,7 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
 
-    data_path = "emnist-letters.npz"
+    data_path = "../../emnist-letters.npz"
     data = utils.load_dataset(data_path)
     dataset = utils.ClassificationDataset(data)
 

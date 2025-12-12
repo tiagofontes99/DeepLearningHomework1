@@ -263,6 +263,8 @@ def main():
                         valid_losses.append(val_loss.item())
                         train_accs.append(train_acc.item())
                         valid_accs.append(val_acc.item())
+
+                        
                     
                     # 2.2(a) table summarizing the explored configurations, including
                     # the best validation accuracy obtained during training for each configuration
